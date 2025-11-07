@@ -1,0 +1,45 @@
+ASSEMBLY LANGUAGE PROGRAM
+org 100h
+; Program for BCD Addition
+.data
+num1 db 25h        ; First BCD number = 25
+num2 db 37h        ; Second BCD number = 37
+result db ?         ; To store result
+.code
+start:
+    mov ax, @data
+    mov ds, ax
+    mov al, num1     ; Load first BCD number
+    add al, num2     ; Add second BCD number (BCD addition)
+    daa              ; Decimal Adjust for Addition (corrects result to BCD format)
+    mov result, al   ; Store result in memory
+ ; Display Result
+    mov ah, 09h
+    lea dx, msg
+    int 21h
+    mov al, result
+    call display_bcd ; Show BCD value on screen
+    mov ah, 4Ch
+    int 21h
+display_bcd proc
+    push ax
+    mov ah, 0
+    mov bl, al
+    mov al, bl
+    ; Display upper nibble
+    mov ah, 02h
+    mov dl, al
+    and dl, 0F0h
+    shr dl, 4
+    add dl, 30h
+    int 21h
+    ; Display lower nibble
+    mov dl, al
+    and dl, 0Fh
+    add dl, 30h
+    int 21h
+    pop ax
+    ret
+display_bcd endp
+msg db 'Result (BCD Addition) = $'
+end start
